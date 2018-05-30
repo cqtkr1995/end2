@@ -3,6 +3,7 @@ from PIL import Image
 import numpy as np
 import random
 import string
+import datasets
 
 import tensorflow as tf
 import math
@@ -163,10 +164,48 @@ class train_model(object):
                         break
                 step += 1
 
+class ocr(obeject):
+    def __init__(self):
+        self.mnist = datasets.get_mnist()
+        self.x = tf.placeholder(tf.float32, [None, 784])
+        self.W = tf.Variable(tf.zeros([784, 10]))
+        self.b = tf.Variable(tf.zeros([10]))
+        self.y = tf.matmul(x, W) + b
+        self.y_ = tf.placeholder(tf.float32, [None, 10])
+
+    def train_recognition(self):
+        cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels = y_, logits = y))
+        train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
+        sess = tf.InteractiveSession()
+        tf.global_variables_initializer().run()
+        
+        for _ in range(1000):
+            batch_xs, batch_ys = mnist.train.next_batch(100)
+            sess.run(train_step, feed_dict = {x: batch_xs, y_: batch_ys})
+        
+        correct_prediction = tf.equal(tf.arg_max(y, 1), tf.arg_max(y_, 1))
+        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+        print(sess.run(accuracy, feed_dict = {x: mnist.test.images, y_: mnist.test.labels}))
+
+class ocr2(obejct):
+    def __init__(self):
+        pass
+
+    def activation_function(self, func_name):
+        if func_name == 'relu':
+            return tf.nn.relu
+
+        elif func_name == 'sigmoid':
+            return tf.sigmoid
+
+        elif func_name == 'tanh':
+            return tf.tanh
+
 class verification(object):
     def __init__(self)
 
 
 class face_recognition(obejct):
     def __init__(self):
+
 
